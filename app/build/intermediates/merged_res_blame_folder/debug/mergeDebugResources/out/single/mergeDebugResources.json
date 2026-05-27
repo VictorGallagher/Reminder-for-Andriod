@@ -1,0 +1,90 @@
+[
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/xml_backup_rules.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.example.reminder.app-debug-47:/layout_activity_logs.xml.flat",
+        "source": "com.example.reminder.app-main-49:/layout/activity_logs.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/layout_activity_add_policy.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/activity_add_policy.xml"
+    },
+    {
+        "merged": "com.example.reminder.app-debug-47:/layout_item_log.xml.flat",
+        "source": "com.example.reminder.app-main-49:/layout/item_log.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/xml_data_extraction_rules.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/layout_item_policy.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/item_policy.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/drawable_ic_launcher_background.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.reminder.app-debug-47:/layout_activity_main.xml.flat",
+        "source": "com.example.reminder.app-main-49:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-debug-47:/layout_activity_main.xml.flat",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/activity_main.xml"
+    }
+]

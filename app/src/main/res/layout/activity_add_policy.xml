@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="72dp" />
+
+        <Button
+            android:id="@+id/button_import_todo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Import Suggestion from To Do List" />
+
+        <EditText
+            android:id="@+id/edittext_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:inputType="text" />
+
+        <EditText
+            android:id="@+id/edittext_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Message"
+            android:inputType="textMultiLine" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textview_selected_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date: Not set"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/button_select_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Date" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textview_selected_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Time: Not set"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/button_select_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Time" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/textview_selected_ringtone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sound: Default"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/button_select_ringtone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Sound" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Recurrence Period" />
+
+        <Spinner
+            android:id="@+id/spinner_period"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Reminder Type" />
+
+        <Spinner
+            android:id="@+id/spinner_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/layout_nag_interval"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Nag Interval (for Question type)" />
+
+            <Spinner
+                android:id="@+id/spinner_nag_interval"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Save Policy" />
+
+        <Button
+            android:id="@+id/button_delete_policy"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Delete Policy"
+            android:textColor="#FF0000"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>
