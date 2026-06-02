@@ -13,16 +13,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
+/**
+ * BroadcastReceiver that triggers when a reminder alarm fires.
+ * Responsible for displaying the high-priority notification and playing custom audio.
+ */
 class ReminderReceiver : BroadcastReceiver() {
     companion object {
-        // Incrementing the version ensures the system re-creates the channel with 
-        // the latest high-importance and sound-disabling settings.
-        const val CHANNEL_ID = "reminder_channel_v5"
+        // Incrementing version to v8 forces the system to apply new 'no-sound' channel settings.
+        const val CHANNEL_ID = "reminder_channel_v8"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val action = intent.action
-        android.util.Log.d("ReminderReceiver", "Alarm triggered: $action")
+        val triggeredAction = intent.action
+        android.util.Log.d("ReminderReceiver", "Alarm fired! Action: $triggeredAction")
 
         val reminderId = intent.getIntExtra("reminder_id", -1)
         val policyId = intent.getIntExtra("policy_id", -1)
@@ -33,36 +36,35 @@ class ReminderReceiver : BroadcastReceiver() {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val db = ReminderDatabase.getDatabase(context)
+        val manager = ReminderManager(context)
         
-        // High importance is required for the notification to pop up (Heads-up).
+        // Define a high-priority channel. 
+        // We setSound(null, null) so the system notification chime doesn't fight with our custom bell sequence.
         val channel = NotificationChannel(CHANNEL_ID, "Reminders", NotificationManager.IMPORTANCE_HIGH).apply {
-            description = "High priority reminders"
+            description = "High priority reminder alerts"
             enableLights(true)
             enableVibration(true)
             setShowBadge(true)
-            setSound(null, null) // Sound is handled manually by MediaPlayer/ToneGenerator
+            setSound(null, null) 
             lockscreenVisibility = android.app.Notification.VISIBILITY_PUBLIC
         }
         notificationManager.createNotificationChannel(channel)
 
-        // goAsync() tells the OS to keep the process alive after onReceive returns, 
-        // allowing us to finish our background sound playback.
         val pendingResult = goAsync()
         
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val policy = db.reminderDao().getPolicyById(policyId)
-                
-                // Log activation
+                db.reminderDao().markActivated(reminderId, LocalDateTime.now())
+                manager.setWatchdogTimer(reminderId, policyId)
+
                 db.logDao().insertLog(com.example.reminder.data.LogEntry(
                     eventType = "ACTIVATED",
                     policyTitle = title,
-                    details = "Reminder triggered at ${java.time.LocalDateTime.now()}"
+                    details = "Alarm triggered at ${LocalDateTime.now()}. 5-min window active."
                 ))
 
                 val customUri = policy?.customRingtoneUri
-                
-                // Ring count: 3 for Questions, 2 for Notifications.
                 val ringCount = if (type == "QUESTION") 3 else 2
                 
                 try {
@@ -89,7 +91,6 @@ class ReminderReceiver : BroadcastReceiver() {
                     }
                     mediaPlayer.release()
                 } catch (e: Exception) {
-                    // Fail-safe "bell" sound using internal DTMF tones.
                     val toneGenerator = android.media.ToneGenerator(android.media.AudioManager.STREAM_ALARM, 100)
                     repeat(ringCount) {
                         toneGenerator.startTone(android.media.ToneGenerator.TONE_DTMF_A, 500)
@@ -97,14 +98,15 @@ class ReminderReceiver : BroadcastReceiver() {
                     }
                     toneGenerator.release()
                 }
+            } catch (e: Exception) {
+                android.util.Log.e("ReminderReceiver", "Error in background alert task", e)
             } finally {
                 pendingResult.finish()
             }
         }
 
-        // The contentIntent handles what happens if the user taps the notification body itself.
-        val contentIntent = Intent(context, com.example.reminder.ui.MainActivity::class.java)
-        val contentPendingIntent = PendingIntent.getActivity(context, reminderId, contentIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val mainIntent = Intent(context, com.example.reminder.ui.MainActivity::class.java)
+        val contentPendingIntent = PendingIntent.getActivity(context, reminderId, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
@@ -112,20 +114,19 @@ class ReminderReceiver : BroadcastReceiver() {
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
+            // Use only VIBRATE for defaults to stop the system from playing its own separate chime.
             .setDefaults(NotificationCompat.DEFAULT_VIBRATE) 
-            // setFullScreenIntent is critical: it forces the notification to pop up over 
-            // other apps or on the lock screen immediately.
-            .setFullScreenIntent(contentPendingIntent, true) 
+            // REMOVED setFullScreenIntent: This prevents the app from auto-opening as a 
+            // second "window" when the screen is on, keeping the alert purely in the notification bar.
             .setContentIntent(contentPendingIntent)
-            .setTimeoutAfter(90000) // Keep visible as a popup for 90 seconds.
+            .setTimeoutAfter(90000)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
 
-        // Unique request codes (reminderId * 10 + offset) prevent the OS from 
-        // confusing 'Yes' with 'No' when multiple reminders fire.
+        // Unique request codes for buttons prevent system-level command overlap.
         if (type == "QUESTION") {
             val yesIntent = Intent(context, ActionReceiver::class.java).apply {
-                this.action = "ACTION_YES"
+                this.action = "ACTION_YES_$reminderId"
                 putExtra("reminder_id", reminderId)
                 putExtra("policy_id", policyId)
                 putExtra("scheduled_time", scheduledTime)
@@ -133,7 +134,7 @@ class ReminderReceiver : BroadcastReceiver() {
             val yesPendingIntent = PendingIntent.getBroadcast(context, reminderId * 10 + 1, yesIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             
             val noIntent = Intent(context, ActionReceiver::class.java).apply {
-                this.action = "ACTION_NO"
+                this.action = "ACTION_NO_$reminderId"
                 putExtra("reminder_id", reminderId)
                 putExtra("policy_id", policyId)
                 putExtra("scheduled_time", scheduledTime)
@@ -144,7 +145,7 @@ class ReminderReceiver : BroadcastReceiver() {
             builder.addAction(android.R.drawable.ic_delete, "No", noPendingIntent)
         } else {
             val okIntent = Intent(context, ActionReceiver::class.java).apply {
-                this.action = "ACTION_OK"
+                this.action = "ACTION_OK_$reminderId"
                 putExtra("reminder_id", reminderId)
                 putExtra("policy_id", policyId)
                 putExtra("scheduled_time", scheduledTime)
@@ -152,7 +153,7 @@ class ReminderReceiver : BroadcastReceiver() {
             val okPendingIntent = PendingIntent.getBroadcast(context, reminderId * 10 + 3, okIntent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
             val passIntent = Intent(context, ActionReceiver::class.java).apply {
-                this.action = "ACTION_PASS"
+                this.action = "ACTION_PASS_$reminderId"
                 putExtra("reminder_id", reminderId)
                 putExtra("policy_id", policyId)
                 putExtra("scheduled_time", scheduledTime)

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [ReminderPolicy::class, ScheduledReminder::class, LogEntry::class], version = 5, exportSchema = false)
+@Database(entities = [ReminderPolicy::class, ScheduledReminder::class, LogEntry::class], version = 12, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class ReminderDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
@@ -21,7 +21,7 @@ abstract class ReminderDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ReminderDatabase::class.java,
-                    "reminder_database"
+                    "reminder_db_v2"
                 )
                 .fallbackToDestructiveMigration()
                 .build()

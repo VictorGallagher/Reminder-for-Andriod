@@ -14,6 +14,18 @@ import java.time.ZoneId
 class ReminderManager(private val context: Context) {
 
     /**
+     * Checks for scheduling conflicts and shifts the time forward by 2-minute increments
+     * until a free slot is found. This prevents multiple reminders from firing simultaneously.
+     */
+    suspend fun resolveConflicts(db: com.example.reminder.data.ReminderDatabase, requestedTime: LocalDateTime): LocalDateTime {
+        var freeTime = requestedTime
+        while (db.reminderDao().hasReminderAtTime(freeTime)) {
+            freeTime = freeTime.plusMinutes(2)
+        }
+        return freeTime
+    }
+
+    /**
      * Calculates when the next instance of a recurring reminder should happen.
      * Uses [lastTime] as the base to ensure that daily/weekly/etc. patterns
      * remain consistent even if the user interacts with the reminder late.
@@ -61,10 +73,9 @@ class ReminderManager(private val context: Context) {
             .toInstant()
             .toEpochMilli()
 
-        // Exact alarms require special permission on Android 12+.
-        // We fallback to high-priority non-exact if permission is missing.
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+                // Fallback to high-priority non-exact alarm.
                 alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
             } else {
                 // setAlarmClock is the most reliable method for user-facing alerts.
@@ -72,8 +83,47 @@ class ReminderManager(private val context: Context) {
                 alarmManager.setAlarmClock(info, pendingIntent)
             }
         } catch (e: SecurityException) {
+            // Permission was revoked at runtime.
             alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
+        } catch (e: Exception) {
+            // General safety catch.
         }
+    }
+
+    /**
+     * Sets a 5-minute timer that will automatically trigger the nag feature
+     * if the user doesn't interact with the notification.
+     */
+    fun setWatchdogTimer(reminderId: Int, policyId: Int) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, WatchdogReceiver::class.java).apply {
+            putExtra("reminder_id", reminderId)
+            putExtra("policy_id", policyId)
+            action = "com.example.reminder.WATCHDOG_ACTION_$reminderId"
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            reminderId + 10000, // Offset to avoid conflict with main alarm
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val triggerAt = System.currentTimeMillis() + (5 * 60 * 1000)
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAt, pendingIntent)
+    }
+
+    /**
+     * Cancels the 5-minute response window timer.
+     */
+    fun cancelWatchdogTimer(reminderId: Int) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, WatchdogReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            reminderId + 10000,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
     }
 
     fun cancelAlarm(reminderId: Int) {

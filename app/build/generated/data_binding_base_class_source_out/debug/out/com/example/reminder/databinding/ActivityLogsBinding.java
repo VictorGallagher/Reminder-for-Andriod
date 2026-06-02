@@ -24,12 +24,16 @@ public final class ActivityLogsBinding implements ViewBinding {
   public final Button buttonClearLogs;
 
   @NonNull
+  public final Button buttonExportLogs;
+
+  @NonNull
   public final RecyclerView recyclerviewLogs;
 
   private ActivityLogsBinding(@NonNull LinearLayout rootView, @NonNull Button buttonClearLogs,
-      @NonNull RecyclerView recyclerviewLogs) {
+      @NonNull Button buttonExportLogs, @NonNull RecyclerView recyclerviewLogs) {
     this.rootView = rootView;
     this.buttonClearLogs = buttonClearLogs;
+    this.buttonExportLogs = buttonExportLogs;
     this.recyclerviewLogs = recyclerviewLogs;
   }
 
@@ -66,13 +70,20 @@ public final class ActivityLogsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.button_export_logs;
+      Button buttonExportLogs = ViewBindings.findChildViewById(rootView, id);
+      if (buttonExportLogs == null) {
+        break missingId;
+      }
+
       id = R.id.recyclerview_logs;
       RecyclerView recyclerviewLogs = ViewBindings.findChildViewById(rootView, id);
       if (recyclerviewLogs == null) {
         break missingId;
       }
 
-      return new ActivityLogsBinding((LinearLayout) rootView, buttonClearLogs, recyclerviewLogs);
+      return new ActivityLogsBinding((LinearLayout) rootView, buttonClearLogs, buttonExportLogs,
+          recyclerviewLogs);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -11,6 +11,7 @@ drawable ic_launcher_background
 drawable ic_launcher_foreground
 id button_clear_logs
 id button_delete_policy
+id button_export_logs
 id button_import_todo
 id button_save
 id button_select_date
@@ -50,3 +51,4 @@ style Theme_Reminder
 style Theme_ToDoList
 xml backup_rules
 xml data_extraction_rules
+xml file_paths

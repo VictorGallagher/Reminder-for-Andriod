@@ -11,10 +11,25 @@
         android:layout_weight="1"
         android:padding="8dp" />
 
-    <Button
-        android:id="@+id/button_clear_logs"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Clear Logs" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_clear_logs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            android:text="Clear Logs" />
+
+        <Button
+            android:id="@+id/button_export_logs"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="8dp"
+            android:text="Export to File" />
+    </LinearLayout>
 </LinearLayout>

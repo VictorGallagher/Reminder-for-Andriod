@@ -10,5 +10,7 @@ data class ScheduledReminder(
     val id: Int = 0,
     val policyId: Int,
     val scheduledTime: LocalDateTime,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val isActivated: Boolean = false,
+    val activationTime: LocalDateTime? = null
 )

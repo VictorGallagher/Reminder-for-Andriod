@@ -10,6 +10,7 @@ int drawable ic_launcher_background 0x0
 int drawable ic_launcher_foreground 0x0
 int id button_clear_logs 0x0
 int id button_delete_policy 0x0
+int id button_export_logs 0x0
 int id button_import_todo 0x0
 int id button_save 0x0
 int id button_select_date 0x0
@@ -49,3 +50,4 @@ int style Theme_Reminder 0x0
 int style Theme_ToDoList 0x0
 int xml backup_rules 0x0
 int xml data_extraction_rules 0x0
+int xml file_paths 0x0

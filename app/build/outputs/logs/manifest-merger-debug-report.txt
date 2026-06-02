@@ -1,9 +1,20 @@
 -- Merging decision tree log ---
+provider#androidx.core.content.FileProvider
+INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:48:9-56:20
+	android:grantUriPermissions
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:52:13-47
+	android:authorities
+		INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:50:13-64
+	android:exported
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:51:13-37
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:49:13-62
 manifest
-ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-49:12
-INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-49:12
-INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-49:12
-INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-49:12
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-60:12
+INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-60:12
+INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-60:12
+INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:2:1-60:12
 MERGED from [androidx.databinding:viewbinding:9.2.1] /home/victor/.gradle/caches/9.4.1/transforms/6333e19482c056bc19abcfbc4a39465d/transformed/viewbinding-9.2.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.navigation:navigation-common:2.6.0] /home/victor/.gradle/caches/9.4.1/transforms/1b0c1fa01530ddc5bc66dd9d972cfc76/transformed/navigation-common-2.6.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.6.0] /home/victor/.gradle/caches/9.4.1/transforms/d6fbd2fcde1162db02d238dd63d3de54/transformed/navigation-common-ktx-2.6.0/AndroidManifest.xml:17:1-22:12
@@ -113,8 +124,8 @@ ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManif
 	android:authorities
 		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:14:19-70
 application
-ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:17:5-47:19
-INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:17:5-47:19
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:17:5-58:19
+INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:17:5-58:19
 MERGED from [com.google.android.material:material:1.10.0] /home/victor/.gradle/caches/9.4.1/transforms/f21ec8d5374446762ed5a8ad780e0ef4/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.10.0] /home/victor/.gradle/caches/9.4.1/transforms/f21ec8d5374446762ed5a8ad780e0ef4/transformed/material-1.10.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /home/victor/.gradle/caches/9.4.1/transforms/daec98a834515c850306b7fd92b33f80/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -183,18 +194,28 @@ receiver#com.example.reminder.ActionReceiver
 ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:38:9-52
 	android:name
 		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:38:19-49
+receiver#com.example.reminder.WatchdogReceiver
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:39:9-54
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:39:19-51
 receiver#com.example.reminder.BootReceiver
-ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:39:9-45:20
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:40:9-46:20
 	android:exported
-		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:41:13-37
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:42:13-37
 	android:name
-		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:40:13-41
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:41:13-41
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED
-ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:42:13-44:29
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:43:13-45:29
 action#android.intent.action.BOOT_COMPLETED
-ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:43:17-79
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:44:17-79
 	android:name
-		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:43:25-76
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:44:25-76
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:53:13-55:54
+	android:resource
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:55:17-51
+	android:name
+		ADDED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml:54:17-67
 uses-sdk
 INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/victor/AndroidStudioProjects/Reminder/app/src/main/AndroidManifest.xml

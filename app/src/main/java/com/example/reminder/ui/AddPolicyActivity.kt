@@ -106,12 +106,16 @@ class AddPolicyActivity : AppCompatActivity() {
                         }
                     }
 
-                    // Use the next trigger time for the UI if available, otherwise the policy's start date.
-                    val displayTime = nextReminder?.scheduledTime ?: policy.startDate
-                    selectedDate = displayTime.toLocalDate()
+                    // Always use the POLICY configuration time for the editable fields.
+                    // The 'nextReminder' is only used to show the user a status of the upcoming alert.
+                    selectedDate = policy.startDate.toLocalDate()
                     binding.textviewSelectedDate.text = "Date: ${selectedDate?.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))}"
-                    selectedTime = displayTime.toLocalTime()
+                    selectedTime = policy.startDate.toLocalTime()
                     binding.textviewSelectedTime.text = "Time: ${selectedTime?.format(DateTimeFormatter.ofPattern("HH:mm"))}"
+                    
+                    if (nextReminder != null && nextReminder.scheduledTime != policy.startDate) {
+                        // Optional: we could show "Nag scheduled for: HH:mm" here if needed.
+                    }
                     
                     selectedRingtoneUri = policy.customRingtoneUri
                     if (selectedRingtoneUri != null) {
@@ -288,13 +292,16 @@ class AddPolicyActivity : AppCompatActivity() {
         val manager = ReminderManager(this)
 
         CoroutineScope(Dispatchers.IO).launch {
+            // Check for scheduling conflicts and adjust if necessary.
+            val adjustedStartTime = manager.resolveConflicts(db, startDateTime)
+            
             val currentPolicy = editingPolicy
             if (currentPolicy != null) {
                 // UPDATE existing policy.
                 val updatedPolicy = currentPolicy.copy(
                     title = title,
                     message = message,
-                    startDate = startDateTime,
+                    startDate = adjustedStartTime,
                     period = period,
                     type = type,
                     nagIntervalMinutes = nagInterval,
@@ -307,7 +314,7 @@ class AddPolicyActivity : AppCompatActivity() {
                 if (next != null) {
                     // Cancel existing alarm and update the database entry.
                     manager.cancelAlarm(next.id)
-                    val updatedReminder = next.copy(scheduledTime = startDateTime)
+                    val updatedReminder = next.copy(scheduledTime = adjustedStartTime)
                     db.reminderDao().updateScheduledReminder(updatedReminder)
                     manager.setAlarm(updatedReminder, updatedPolicy)
                 }
@@ -316,7 +323,7 @@ class AddPolicyActivity : AppCompatActivity() {
                 val policy = ReminderPolicy(
                     title = title,
                     message = message,
-                    startDate = startDateTime,
+                    startDate = adjustedStartTime,
                     period = period,
                     type = type,
                     nagIntervalMinutes = nagInterval,
@@ -328,7 +335,7 @@ class AddPolicyActivity : AppCompatActivity() {
                 // Create the very first execution instance for this policy.
                 val firstReminder = com.example.reminder.data.ScheduledReminder(
                     policyId = savedPolicy.id,
-                    scheduledTime = startDateTime
+                    scheduledTime = adjustedStartTime
                 )
                 val reminderId = db.reminderDao().insertScheduledReminder(firstReminder)
                 manager.setAlarm(firstReminder.copy(id = reminderId.toInt()), savedPolicy)
@@ -340,7 +347,12 @@ class AddPolicyActivity : AppCompatActivity() {
                     details = "Scheduled for: ${savedPolicy.startDate}"
                 ))
             }
-            finish()
+            launch(Dispatchers.Main) {
+                if (adjustedStartTime != startDateTime) {
+                    Toast.makeText(this@AddPolicyActivity, "Time adjusted to avoid conflict: ${adjustedStartTime.toLocalTime()}", Toast.LENGTH_LONG).show()
+                }
+                finish()
+            }
         }
     }
 }

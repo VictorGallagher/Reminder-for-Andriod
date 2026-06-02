@@ -3202,6 +3202,7 @@ int id bounceStart 0x7f080062
 int id buttonPanel 0x7f080063
 int id button_clear_logs 0x7f08020c
 int id button_delete_policy 0x7f080206
+int id button_export_logs 0x7f080213
 int id button_import_todo 0x7f080064
 int id button_save 0x7f080065
 int id button_select_date 0x7f080208
@@ -7262,3 +7263,4 @@ int[] styleable include { 0x7f030137 }
 int styleable include_constraintSet 0
 int xml backup_rules 0x7f120000
 int xml data_extraction_rules 0x7f120001
+int xml file_paths 0x7f120002

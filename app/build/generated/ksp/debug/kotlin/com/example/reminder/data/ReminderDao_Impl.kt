@@ -77,7 +77,7 @@ public class ReminderDao_Impl(
       }
     }
     this.__insertAdapterOfScheduledReminder = object : EntityInsertAdapter<ScheduledReminder>() {
-      protected override fun createQuery(): String = "INSERT OR ABORT INTO `scheduled_reminders` (`id`,`policyId`,`scheduledTime`,`isCompleted`) VALUES (nullif(?, 0),?,?,?)"
+      protected override fun createQuery(): String = "INSERT OR ABORT INTO `scheduled_reminders` (`id`,`policyId`,`scheduledTime`,`isCompleted`,`isActivated`,`activationTime`) VALUES (nullif(?, 0),?,?,?,?,?)"
 
       protected override fun bind(statement: SQLiteStatement, entity: ScheduledReminder) {
         statement.bindLong(1, entity.id.toLong())
@@ -90,6 +90,15 @@ public class ReminderDao_Impl(
         }
         val _tmp_1: Int = if (entity.isCompleted) 1 else 0
         statement.bindLong(4, _tmp_1.toLong())
+        val _tmp_2: Int = if (entity.isActivated) 1 else 0
+        statement.bindLong(5, _tmp_2.toLong())
+        val _tmpActivationTime: LocalDateTime? = entity.activationTime
+        val _tmp_3: String? = __converters.dateToTimestamp(_tmpActivationTime)
+        if (_tmp_3 == null) {
+          statement.bindNull(6)
+        } else {
+          statement.bindText(6, _tmp_3)
+        }
       }
     }
     this.__updateAdapterOfReminderPolicy = object : EntityDeleteOrUpdateAdapter<ReminderPolicy>() {
@@ -125,7 +134,7 @@ public class ReminderDao_Impl(
       }
     }
     this.__updateAdapterOfScheduledReminder = object : EntityDeleteOrUpdateAdapter<ScheduledReminder>() {
-      protected override fun createQuery(): String = "UPDATE OR ABORT `scheduled_reminders` SET `id` = ?,`policyId` = ?,`scheduledTime` = ?,`isCompleted` = ? WHERE `id` = ?"
+      protected override fun createQuery(): String = "UPDATE OR ABORT `scheduled_reminders` SET `id` = ?,`policyId` = ?,`scheduledTime` = ?,`isCompleted` = ?,`isActivated` = ?,`activationTime` = ? WHERE `id` = ?"
 
       protected override fun bind(statement: SQLiteStatement, entity: ScheduledReminder) {
         statement.bindLong(1, entity.id.toLong())
@@ -138,7 +147,16 @@ public class ReminderDao_Impl(
         }
         val _tmp_1: Int = if (entity.isCompleted) 1 else 0
         statement.bindLong(4, _tmp_1.toLong())
-        statement.bindLong(5, entity.id.toLong())
+        val _tmp_2: Int = if (entity.isActivated) 1 else 0
+        statement.bindLong(5, _tmp_2.toLong())
+        val _tmpActivationTime: LocalDateTime? = entity.activationTime
+        val _tmp_3: String? = __converters.dateToTimestamp(_tmpActivationTime)
+        if (_tmp_3 == null) {
+          statement.bindNull(6)
+        } else {
+          statement.bindText(6, _tmp_3)
+        }
+        statement.bindLong(7, entity.id.toLong())
       }
     }
   }
@@ -242,8 +260,8 @@ public class ReminderDao_Impl(
     }
   }
 
-  public override suspend fun getOldUncompletedReminders(now: LocalDateTime): List<ScheduledReminder> {
-    val _sql: String = "SELECT * FROM scheduled_reminders WHERE scheduledTime < ? AND isCompleted = 0"
+  public override suspend fun getOldUncompletedReminders(now: LocalDateTime, expiredLimit: LocalDateTime): List<ScheduledReminder> {
+    val _sql: String = "SELECT * FROM scheduled_reminders WHERE (scheduledTime < ? AND isCompleted = 0 AND isActivated = 0) OR (isActivated = 1 AND activationTime < ?)"
     return performSuspending(__db, true, false) { _connection ->
       val _stmt: SQLiteStatement = _connection.prepare(_sql)
       try {
@@ -254,10 +272,19 @@ public class ReminderDao_Impl(
         } else {
           _stmt.bindText(_argIndex, _tmp)
         }
+        _argIndex = 2
+        val _tmp_1: String? = __converters.dateToTimestamp(expiredLimit)
+        if (_tmp_1 == null) {
+          _stmt.bindNull(_argIndex)
+        } else {
+          _stmt.bindText(_argIndex, _tmp_1)
+        }
         val _columnIndexOfId: Int = getColumnIndexOrThrow(_stmt, "id")
         val _columnIndexOfPolicyId: Int = getColumnIndexOrThrow(_stmt, "policyId")
         val _columnIndexOfScheduledTime: Int = getColumnIndexOrThrow(_stmt, "scheduledTime")
         val _columnIndexOfIsCompleted: Int = getColumnIndexOrThrow(_stmt, "isCompleted")
+        val _columnIndexOfIsActivated: Int = getColumnIndexOrThrow(_stmt, "isActivated")
+        val _columnIndexOfActivationTime: Int = getColumnIndexOrThrow(_stmt, "activationTime")
         val _result: MutableList<ScheduledReminder> = mutableListOf()
         while (_stmt.step()) {
           val _item: ScheduledReminder
@@ -266,23 +293,35 @@ public class ReminderDao_Impl(
           val _tmpPolicyId: Int
           _tmpPolicyId = _stmt.getLong(_columnIndexOfPolicyId).toInt()
           val _tmpScheduledTime: LocalDateTime
-          val _tmp_1: String?
+          val _tmp_2: String?
           if (_stmt.isNull(_columnIndexOfScheduledTime)) {
-            _tmp_1 = null
+            _tmp_2 = null
           } else {
-            _tmp_1 = _stmt.getText(_columnIndexOfScheduledTime)
+            _tmp_2 = _stmt.getText(_columnIndexOfScheduledTime)
           }
-          val _tmp_2: LocalDateTime? = __converters.fromTimestamp(_tmp_1)
-          if (_tmp_2 == null) {
+          val _tmp_3: LocalDateTime? = __converters.fromTimestamp(_tmp_2)
+          if (_tmp_3 == null) {
             error("Expected NON-NULL 'java.time.LocalDateTime', but it was NULL.")
           } else {
-            _tmpScheduledTime = _tmp_2
+            _tmpScheduledTime = _tmp_3
           }
           val _tmpIsCompleted: Boolean
-          val _tmp_3: Int
-          _tmp_3 = _stmt.getLong(_columnIndexOfIsCompleted).toInt()
-          _tmpIsCompleted = _tmp_3 != 0
-          _item = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted)
+          val _tmp_4: Int
+          _tmp_4 = _stmt.getLong(_columnIndexOfIsCompleted).toInt()
+          _tmpIsCompleted = _tmp_4 != 0
+          val _tmpIsActivated: Boolean
+          val _tmp_5: Int
+          _tmp_5 = _stmt.getLong(_columnIndexOfIsActivated).toInt()
+          _tmpIsActivated = _tmp_5 != 0
+          val _tmpActivationTime: LocalDateTime?
+          val _tmp_6: String?
+          if (_stmt.isNull(_columnIndexOfActivationTime)) {
+            _tmp_6 = null
+          } else {
+            _tmp_6 = _stmt.getText(_columnIndexOfActivationTime)
+          }
+          _tmpActivationTime = __converters.fromTimestamp(_tmp_6)
+          _item = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted,_tmpIsActivated,_tmpActivationTime)
           _result.add(_item)
         }
         _result
@@ -301,6 +340,8 @@ public class ReminderDao_Impl(
         val _columnIndexOfPolicyId: Int = getColumnIndexOrThrow(_stmt, "policyId")
         val _columnIndexOfScheduledTime: Int = getColumnIndexOrThrow(_stmt, "scheduledTime")
         val _columnIndexOfIsCompleted: Int = getColumnIndexOrThrow(_stmt, "isCompleted")
+        val _columnIndexOfIsActivated: Int = getColumnIndexOrThrow(_stmt, "isActivated")
+        val _columnIndexOfActivationTime: Int = getColumnIndexOrThrow(_stmt, "activationTime")
         val _result: MutableList<ScheduledReminder> = mutableListOf()
         while (_stmt.step()) {
           val _item: ScheduledReminder
@@ -325,7 +366,19 @@ public class ReminderDao_Impl(
           val _tmp_2: Int
           _tmp_2 = _stmt.getLong(_columnIndexOfIsCompleted).toInt()
           _tmpIsCompleted = _tmp_2 != 0
-          _item = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted)
+          val _tmpIsActivated: Boolean
+          val _tmp_3: Int
+          _tmp_3 = _stmt.getLong(_columnIndexOfIsActivated).toInt()
+          _tmpIsActivated = _tmp_3 != 0
+          val _tmpActivationTime: LocalDateTime?
+          val _tmp_4: String?
+          if (_stmt.isNull(_columnIndexOfActivationTime)) {
+            _tmp_4 = null
+          } else {
+            _tmp_4 = _stmt.getText(_columnIndexOfActivationTime)
+          }
+          _tmpActivationTime = __converters.fromTimestamp(_tmp_4)
+          _item = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted,_tmpIsActivated,_tmpActivationTime)
           _result.add(_item)
         }
         _result
@@ -413,6 +466,8 @@ public class ReminderDao_Impl(
         val _columnIndexOfPolicyId: Int = getColumnIndexOrThrow(_stmt, "policyId")
         val _columnIndexOfScheduledTime: Int = getColumnIndexOrThrow(_stmt, "scheduledTime")
         val _columnIndexOfIsCompleted: Int = getColumnIndexOrThrow(_stmt, "isCompleted")
+        val _columnIndexOfIsActivated: Int = getColumnIndexOrThrow(_stmt, "isActivated")
+        val _columnIndexOfActivationTime: Int = getColumnIndexOrThrow(_stmt, "activationTime")
         val _result: ScheduledReminder?
         if (_stmt.step()) {
           val _tmpId: Int
@@ -436,9 +491,48 @@ public class ReminderDao_Impl(
           val _tmp_2: Int
           _tmp_2 = _stmt.getLong(_columnIndexOfIsCompleted).toInt()
           _tmpIsCompleted = _tmp_2 != 0
-          _result = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted)
+          val _tmpIsActivated: Boolean
+          val _tmp_3: Int
+          _tmp_3 = _stmt.getLong(_columnIndexOfIsActivated).toInt()
+          _tmpIsActivated = _tmp_3 != 0
+          val _tmpActivationTime: LocalDateTime?
+          val _tmp_4: String?
+          if (_stmt.isNull(_columnIndexOfActivationTime)) {
+            _tmp_4 = null
+          } else {
+            _tmp_4 = _stmt.getText(_columnIndexOfActivationTime)
+          }
+          _tmpActivationTime = __converters.fromTimestamp(_tmp_4)
+          _result = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted,_tmpIsActivated,_tmpActivationTime)
         } else {
           _result = null
+        }
+        _result
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun hasReminderAtTime(time: LocalDateTime): Boolean {
+    val _sql: String = "SELECT EXISTS(SELECT 1 FROM scheduled_reminders WHERE scheduledTime = ? AND isCompleted = 0 LIMIT 1)"
+    return performSuspending(__db, true, false) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        val _tmp: String? = __converters.dateToTimestamp(time)
+        if (_tmp == null) {
+          _stmt.bindNull(_argIndex)
+        } else {
+          _stmt.bindText(_argIndex, _tmp)
+        }
+        val _result: Boolean
+        if (_stmt.step()) {
+          val _tmp_1: Int
+          _tmp_1 = _stmt.getLong(0).toInt()
+          _result = _tmp_1 != 0
+        } else {
+          _result = false
         }
         _result
       } finally {
@@ -459,6 +553,41 @@ public class ReminderDao_Impl(
         } else {
           _stmt.bindText(_argIndex, _tmp)
         }
+        _stmt.step()
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun markActivated(id: Int, time: LocalDateTime) {
+    val _sql: String = "UPDATE scheduled_reminders SET isActivated = 1, activationTime = ? WHERE id = ?"
+    return performSuspending(__db, false, true) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        val _tmp: String? = __converters.dateToTimestamp(time)
+        if (_tmp == null) {
+          _stmt.bindNull(_argIndex)
+        } else {
+          _stmt.bindText(_argIndex, _tmp)
+        }
+        _argIndex = 2
+        _stmt.bindLong(_argIndex, id.toLong())
+        _stmt.step()
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
+  public override suspend fun markDeactivated(id: Int) {
+    val _sql: String = "UPDATE scheduled_reminders SET isActivated = 0 WHERE id = ?"
+    return performSuspending(__db, false, true) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        _stmt.bindLong(_argIndex, id.toLong())
         _stmt.step()
       } finally {
         _stmt.close()
@@ -519,7 +648,7 @@ public class ReminderDao_Impl(
       return
     }
     val _stringBuilder: StringBuilder = StringBuilder()
-    _stringBuilder.append("SELECT `id`,`policyId`,`scheduledTime`,`isCompleted` FROM `scheduled_reminders` WHERE `policyId` IN (")
+    _stringBuilder.append("SELECT `id`,`policyId`,`scheduledTime`,`isCompleted`,`isActivated`,`activationTime` FROM `scheduled_reminders` WHERE `policyId` IN (")
     val _inputSize: Int = _map.size()
     appendPlaceholders(_stringBuilder, _inputSize)
     _stringBuilder.append(")")
@@ -540,6 +669,8 @@ public class ReminderDao_Impl(
       val _columnIndexOfPolicyId: Int = 1
       val _columnIndexOfScheduledTime: Int = 2
       val _columnIndexOfIsCompleted: Int = 3
+      val _columnIndexOfIsActivated: Int = 4
+      val _columnIndexOfActivationTime: Int = 5
       while (_stmt.step()) {
         val _tmpKey: Long
         _tmpKey = _stmt.getLong(_itemKeyIndex)
@@ -567,7 +698,19 @@ public class ReminderDao_Impl(
           val _tmp_2: Int
           _tmp_2 = _stmt.getLong(_columnIndexOfIsCompleted).toInt()
           _tmpIsCompleted = _tmp_2 != 0
-          _item_1 = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted)
+          val _tmpIsActivated: Boolean
+          val _tmp_3: Int
+          _tmp_3 = _stmt.getLong(_columnIndexOfIsActivated).toInt()
+          _tmpIsActivated = _tmp_3 != 0
+          val _tmpActivationTime: LocalDateTime?
+          val _tmp_4: String?
+          if (_stmt.isNull(_columnIndexOfActivationTime)) {
+            _tmp_4 = null
+          } else {
+            _tmp_4 = _stmt.getText(_columnIndexOfActivationTime)
+          }
+          _tmpActivationTime = __converters.fromTimestamp(_tmp_4)
+          _item_1 = ScheduledReminder(_tmpId,_tmpPolicyId,_tmpScheduledTime,_tmpIsCompleted,_tmpIsActivated,_tmpActivationTime)
           _tmpRelation.add(_item_1)
         }
       }

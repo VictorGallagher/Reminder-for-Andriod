@@ -36,13 +36,13 @@ public class ReminderDatabase_Impl : ReminderDatabase() {
   }
 
   protected override fun createOpenDelegate(): RoomOpenDelegate {
-    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(5, "82ba8560b825113c35d41cf017f5cc42", "bb337692e00b5a296ef77a29e85500ad") {
+    val _openDelegate: RoomOpenDelegate = object : RoomOpenDelegate(12, "daca078f1156972d9674f7f0a7c1f65a", "8b2eb61a73161e4a794c3110f70fcf73") {
       public override fun createAllTables(connection: SQLiteConnection) {
         connection.execSQL("CREATE TABLE IF NOT EXISTS `reminder_policies` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `message` TEXT NOT NULL, `startDate` TEXT NOT NULL, `period` TEXT NOT NULL, `type` TEXT NOT NULL, `nagIntervalMinutes` INTEGER, `customRingtoneUri` TEXT)")
-        connection.execSQL("CREATE TABLE IF NOT EXISTS `scheduled_reminders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `policyId` INTEGER NOT NULL, `scheduledTime` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL)")
+        connection.execSQL("CREATE TABLE IF NOT EXISTS `scheduled_reminders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `policyId` INTEGER NOT NULL, `scheduledTime` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `isActivated` INTEGER NOT NULL, `activationTime` TEXT)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS `event_logs` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` TEXT NOT NULL, `eventType` TEXT NOT NULL, `policyTitle` TEXT NOT NULL, `details` TEXT)")
         connection.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)")
-        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '82ba8560b825113c35d41cf017f5cc42')")
+        connection.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'daca078f1156972d9674f7f0a7c1f65a')")
       }
 
       public override fun dropAllTables(connection: SQLiteConnection) {
@@ -93,6 +93,8 @@ public class ReminderDatabase_Impl : ReminderDatabase() {
         _columnsScheduledReminders.put("policyId", TableInfo.Column("policyId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsScheduledReminders.put("scheduledTime", TableInfo.Column("scheduledTime", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
         _columnsScheduledReminders.put("isCompleted", TableInfo.Column("isCompleted", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
+        _columnsScheduledReminders.put("isActivated", TableInfo.Column("isActivated", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY))
+        _columnsScheduledReminders.put("activationTime", TableInfo.Column("activationTime", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY))
         val _foreignKeysScheduledReminders: MutableSet<TableInfo.ForeignKey> = mutableSetOf()
         val _indicesScheduledReminders: MutableSet<TableInfo.Index> = mutableSetOf()
         val _infoScheduledReminders: TableInfo = TableInfo("scheduled_reminders", _columnsScheduledReminders, _foreignKeysScheduledReminders, _indicesScheduledReminders)

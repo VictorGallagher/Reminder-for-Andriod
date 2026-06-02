@@ -18,8 +18,14 @@ interface ReminderDao {
     @Query("SELECT * FROM reminder_policies")
     fun getAllPoliciesWithNextReminder(): Flow<List<PolicyWithNextReminder>>
 
-    @Query("SELECT * FROM scheduled_reminders WHERE scheduledTime < :now AND isCompleted = 0")
-    suspend fun getOldUncompletedReminders(now: LocalDateTime): List<ScheduledReminder>
+    @Query("SELECT * FROM scheduled_reminders WHERE (scheduledTime < :now AND isCompleted = 0 AND isActivated = 0) OR (isActivated = 1 AND activationTime < :expiredLimit)")
+    suspend fun getOldUncompletedReminders(now: LocalDateTime, expiredLimit: LocalDateTime): List<ScheduledReminder>
+
+    @Query("UPDATE scheduled_reminders SET isActivated = 1, activationTime = :time WHERE id = :id")
+    suspend fun markActivated(id: Int, time: LocalDateTime)
+
+    @Query("UPDATE scheduled_reminders SET isActivated = 0 WHERE id = :id")
+    suspend fun markDeactivated(id: Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPolicy(policy: ReminderPolicy): Long
@@ -50,4 +56,7 @@ interface ReminderDao {
 
     @Query("DELETE FROM scheduled_reminders WHERE id = :id")
     suspend fun deleteScheduledReminder(id: Int)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM scheduled_reminders WHERE scheduledTime = :time AND isCompleted = 0 LIMIT 1)")
+    suspend fun hasReminderAtTime(time: LocalDateTime): Boolean
 }

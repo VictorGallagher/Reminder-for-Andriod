@@ -52,6 +52,7 @@
 
         <receiver android:name="com.example.reminder.ReminderReceiver" />
         <receiver android:name="com.example.reminder.ActionReceiver" />
+        <receiver android:name="com.example.reminder.WatchdogReceiver" />
         <receiver
             android:name="com.example.reminder.BootReceiver"
             android:exported="false" >
@@ -60,6 +61,15 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.reminder.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.example.reminder.androidx-startup"

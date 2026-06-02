@@ -1,5 +1,9 @@
 [
     {
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-mergeDebugResources-46:/layout/activity_logs.xml",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/activity_logs.xml"
+    },
+    {
         "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-mergeDebugResources-46:/layout/item_policy.xml",
         "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/item_policy.xml"
     },
@@ -8,12 +12,8 @@
         "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/activity_main.xml"
     },
     {
-        "merged": "com.example.reminder.app-mergeDebugResources-46:/layout/item_log.xml",
-        "source": "com.example.reminder.app-main-49:/layout/item_log.xml"
-    },
-    {
-        "merged": "com.example.reminder.app-mergeDebugResources-46:/layout/activity_logs.xml",
-        "source": "com.example.reminder.app-main-49:/layout/activity_logs.xml"
+        "merged": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-mergeDebugResources-46:/layout/item_log.xml",
+        "source": "/home/victor/.gradle/daemon/9.4.1/com.example.reminder.app-main-49:/layout/item_log.xml"
     },
     {
         "merged": "com.example.reminder.app-mergeDebugResources-46:/layout/activity_main.xml",
