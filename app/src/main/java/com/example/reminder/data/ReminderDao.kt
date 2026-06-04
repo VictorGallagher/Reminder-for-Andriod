@@ -57,6 +57,9 @@ interface ReminderDao {
     @Query("DELETE FROM scheduled_reminders WHERE id = :id")
     suspend fun deleteScheduledReminder(id: Int)
 
+    @Query("DELETE FROM scheduled_reminders WHERE policyId = :policyId AND isCompleted = 0")
+    suspend fun deleteAllPendingRemindersForPolicy(policyId: Int)
+
     @Query("SELECT EXISTS(SELECT 1 FROM scheduled_reminders WHERE scheduledTime = :time AND isCompleted = 0 LIMIT 1)")
     suspend fun hasReminderAtTime(time: LocalDateTime): Boolean
 }

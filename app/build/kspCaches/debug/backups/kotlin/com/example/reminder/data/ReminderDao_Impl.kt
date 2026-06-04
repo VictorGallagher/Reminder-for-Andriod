@@ -637,6 +637,20 @@ public class ReminderDao_Impl(
     }
   }
 
+  public override suspend fun deleteAllPendingRemindersForPolicy(policyId: Int) {
+    val _sql: String = "DELETE FROM scheduled_reminders WHERE policyId = ? AND isCompleted = 0"
+    return performSuspending(__db, false, true) { _connection ->
+      val _stmt: SQLiteStatement = _connection.prepare(_sql)
+      try {
+        var _argIndex: Int = 1
+        _stmt.bindLong(_argIndex, policyId.toLong())
+        _stmt.step()
+      } finally {
+        _stmt.close()
+      }
+    }
+  }
+
   private fun __fetchRelationshipscheduledRemindersAscomExampleReminderDataScheduledReminder(_connection: SQLiteConnection, _map: LongSparseArray<MutableList<ScheduledReminder>>) {
     if (_map.isEmpty()) {
       return

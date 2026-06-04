@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Reminder"
+rootProject.name = "Reminder for Android"
 include(":app")

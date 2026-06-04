@@ -290,10 +290,11 @@ class AddPolicyActivity : AppCompatActivity() {
 
         val db = ReminderDatabase.getDatabase(this)
         val manager = ReminderManager(this)
+        val scheduler = com.example.reminder.Scheduler(this)
 
         CoroutineScope(Dispatchers.IO).launch {
             // Check for scheduling conflicts and adjust if necessary.
-            val adjustedStartTime = manager.resolveConflicts(db, startDateTime)
+            val adjustedStartTime = scheduler.resolveConflicts(startDateTime)
             
             val currentPolicy = editingPolicy
             if (currentPolicy != null) {
@@ -312,10 +313,12 @@ class AddPolicyActivity : AppCompatActivity() {
                 // Reschedule the next reminder to match the new settings.
                 val next = db.reminderDao().getNextScheduledReminder(updatedPolicy.id)
                 if (next != null) {
-                    // Cancel existing alarm and update the database entry.
+                    // Cancel existing alarm and clean slate any pending reminders.
                     manager.cancelAlarm(next.id)
-                    val updatedReminder = next.copy(scheduledTime = adjustedStartTime)
-                    db.reminderDao().updateScheduledReminder(updatedReminder)
+                    db.reminderDao().deleteAllPendingRemindersForPolicy(updatedPolicy.id)
+                    
+                    val updatedReminder = next.copy(scheduledTime = adjustedStartTime, isActivated = false, activationTime = null)
+                    db.reminderDao().insertScheduledReminder(updatedReminder)
                     manager.setAlarm(updatedReminder, updatedPolicy)
                 }
             } else {
