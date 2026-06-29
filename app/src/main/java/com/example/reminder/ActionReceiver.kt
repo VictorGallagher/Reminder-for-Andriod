@@ -8,18 +8,25 @@ import com.example.reminder.data.ReminderDatabase
 import com.example.reminder.data.ScheduledReminder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 /**
  * Handles user interactions with reminder notifications (buttons like YES, NO, OK, PASS).
+ * 
+ * DESIGN CONSTRAINTS & DOCUMENTATION:
+ * 1. FIXED "NO" BUTTON DELETION: Tapping NO/PASS updates the existing record with a nag time 
+ *    instead of deleting it, ensuring the reminder stays active in the system.
+ * 2. CORRECTED ROLLOVER LOGIC: Tapping YES/OK triggers a complete policy resync, skipping 
+ *    ahead to the next valid period (e.g., tomorrow) and stripping any temporary nag offsets.
  */
 class ActionReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         val reminderId = intent.getIntExtra("reminder_id", -1)
         val policyId = intent.getIntExtra("policy_id", -1)
+        // scheduled_time is passed from the alarm to ensure next-day/week calculations
+        // are based on the intended time, not the time the user clicked the button.
         val scheduledTimeStr = intent.getStringExtra("scheduled_time")
 
         android.util.Log.d("ActionReceiver", "User interacted: $action for reminder ID: $reminderId")
@@ -47,7 +54,7 @@ class ActionReceiver : BroadcastReceiver() {
                             db.logDao().insertLog(com.example.reminder.data.LogEntry(
                                 eventType = "COMPLETED",
                                 policyTitle = policy.title,
-                                details = "User pressed $logLabel. Proceeding to rollover."
+                                details = "User pressed $logLabel. Resyncing to policy time."
                             ))
 
                             // If recurring, move to the next day and RESYNC to the policy time.
@@ -57,7 +64,7 @@ class ActionReceiver : BroadcastReceiver() {
                                 } catch (e: Exception) {
                                     LocalDateTime.now()
                                 }
-                                // scheduleNextStep handles deleting the current instance and scheduling the next.
+                                // scheduleNextStep handles deleting current and scheduling next.
                                 scheduler.scheduleNextStep(policy, baseTime)
                             } else {
                                 // One-time reminders are fully finished now.

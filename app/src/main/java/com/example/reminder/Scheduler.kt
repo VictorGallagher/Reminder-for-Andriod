@@ -11,6 +11,12 @@ import java.time.LocalDateTime
  * Dedicated coordinator for all scheduling logic.
  * Ensures that reminders follow policy rules, resolve conflicts, 
  * and strictly maintain the "Single Active Reminder" constraint.
+ * 
+ * DESIGN CONSTRAINTS & DOCUMENTATION:
+ * 1. SINGLE ACTIVE REMINDER ENFORCEMENT: scheduleNextStep performing a mandatory 
+ *    wipe of all other pending alerts for a policy before scheduling a new one.
+ * 2. AUTOMATIC POLICY RESYNC: calculateNextFutureTime uses the original policy 
+ *    start time to ensure daily/weekly rollovers ignore temporary nag offsets.
  */
 class Scheduler(private val context: Context) {
     private val db = ReminderDatabase.getDatabase(context)

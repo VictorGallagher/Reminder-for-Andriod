@@ -12,6 +12,11 @@ import kotlinx.coroutines.launch
 
 /**
  * Automates the Nag feature if the user hasn't responded to a notification within 5 minutes.
+ * 
+ * DESIGN CONSTRAINTS & DOCUMENTATION:
+ * 1. 5-MINUTE RESPONSE WINDOW: Implements an automated timeout. If a notification is 
+ *    not answered within 5 minutes, this receiver cancels the notification and 
+ *    triggers the Nag/Snooze function.
  */
 class WatchdogReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
